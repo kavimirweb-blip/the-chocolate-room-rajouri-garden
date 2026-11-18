@@ -13,7 +13,6 @@
    Idea: the cocoa dial. Slide from 30% (milk, sweet) to 90% (dark, deep) and the page darkens like chocolate, the dessert changes and the tasting note rewrites itself.
    Photos: labelled Unsplash stock, placeholders for the cafe's own. */
 :root{--bg:#f6e6d4;--fg:#2b1710;--ac:#b0562c;--card:#fff8f0;--mute:#7d6454;--line:rgba(43,23,16,.14);--serif:'Playfair Display',Georgia,serif;--sans:'Nunito Sans',system-ui,sans-serif;--ease:cubic-bezier(.2,.7,.2,1)}
-body{--bg:color-mix(in srgb,#f6e6d4 calc(100% - var(--k,0)*1%),#1f0e08);--fg:color-mix(in srgb,#2b1710 calc(100% - var(--k,0)*1%),#f6e6d4);--card:color-mix(in srgb,#fff8f0 calc(100% - var(--k,0)*1%),#2e1a11);--mute:color-mix(in srgb,#7d6454 calc(100% - var(--k,0)*1%),#c9ad98);--line:color-mix(in srgb,rgba(43,23,16,.14) calc(100% - var(--k,0)*1%),rgba(246,230,212,.16))}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}a{color:inherit}button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
@@ -57,7 +56,7 @@ footer{padding:30px 0 90px;font-size:.78rem;color:var(--mute);text-align:center}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
-<body style="--k:0">
+<body>
 <nav><div class="wrap"><a class="logo" href="#">The Chocolate <em>Room</em></a><ul><li><a href="#menu">Desserts</a></li><li><a href="#how">How it works</a></li><li><a href="#visit">Visit</a></li></ul><a class="btn" href="#menu" style="padding:.7em 1.3em">Order</a></div></nav>
 
 <header class="hero"><div class="wrap"><div><p class="lab">Dessert cafe · Rajouri Garden</p><h1>How dark<br>do you <em>go?</em></h1><p class="s">Slide the cocoa dial from sweet and milky to deep and dark. The page, the dessert and the tasting note follow. Then order on WhatsApp.</p>
@@ -77,8 +76,10 @@ footer{padding:30px 0 90px;font-size:.78rem;color:var(--mute);text-align:center}
 <script>
 const P=[['Chocolate milkshake bowl','Silky, sweet, nostalgic',40,'img/bowl.jpg',260,'Milky'],['Warm lava cake','Molten centre, vanilla ice cream',55,'img/lava.jpg',340,'Balanced'],['Classic choc cake','Soft sponge, glossy ganache',60,'img/cake.jpg',380,'Balanced'],['Black Forest slice','Cherry, cream, dark sponge',65,'img/slice.jpg',320,'Rich'],['Pour-over fondant','Ganache poured at the table',70,'img/pour.jpg',420,'Deep'],['Dark drizzle brownie','Fudgy, bitter, sea salt',85,'img/drizzle.jpg',300,'Intense']];
 const NT=[[30,'Milky','Soft and sweet. Think warm milk, caramel, comfort.'],[45,'Mellow','Creamy with a little cocoa bite. A crowd-pleaser.'],[55,'Balanced','Cocoa and cream in even measure. Our most-ordered range.'],[70,'Deep','Darker fruit notes, less sugar, a long finish.'],[85,'Intense','Bitter, glossy, serious. For people who mean it.']];
+const LI=[[246,230,212],[255,248,240],[125,100,84],[43,23,16]],DK=[[31,14,8],[46,26,17],[201,173,152],[246,230,212]];
+function mixc(t){const m=(a,b)=>`rgb(${[0,1,2].map(i=>Math.round(a[i]+(b[i]-a[i])*t)).join(',')})`,r=document.body.style;r.setProperty('--bg',m(LI[0],DK[0]));r.setProperty('--card',m(LI[1],DK[1]));r.setProperty('--mute',m(LI[2],DK[2]));r.setProperty('--fg',m(LI[3],DK[3]));const l=m(LI[3],DK[3]);r.setProperty('--line',l.replace('rgb','rgba').replace(')',',.16)'))}
 const rg=document.getElementById('rg');
-function dial(){const v=+rg.value;document.body.style.setProperty('--k',Math.round((v-30)/60*78));document.getElementById('pc').textContent=v;let n=NT[0];NT.forEach(x=>{if(v>=x[0])n=x});document.getElementById('nm').textContent=n[1];document.getElementById('note').textContent=n[2];
+function dial(){const v=+rg.value;mixc((v-30)/60*.78);document.getElementById('pc').textContent=v;let n=NT[0];NT.forEach(x=>{if(v>=x[0])n=x});document.getElementById('nm').textContent=n[1];document.getElementById('note').textContent=n[2];
 let best=0,bd=99;P.forEach((p,i)=>{const d=Math.abs(p[2]-v);if(d<bd){bd=d;best=i}});const pi=document.getElementById('pi');if(pi.dataset.i!=best){pi.style.opacity=0;setTimeout(()=>{pi.src=P[best][3];pi.dataset.i=best;pi.style.opacity=1},200)}document.getElementById('pm').textContent=P[best][0];
 document.querySelectorAll('.it').forEach((c,i)=>c.style.boxShadow=i==best?'0 0 0 2px var(--ac)':'')}
 rg.oninput=dial;
